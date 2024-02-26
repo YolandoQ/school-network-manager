@@ -1,66 +1,94 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API de gerenciamento de dispositivos IoT
+## Contexto
+Implementar em PHP >= 7.2 um sistema de cadastro de escolas, turmas e alunos.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Funcionalidades
+- CRUD de Escolas, turmas e alunos
 
-## About Laravel
+## Tecnologias
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel/ Laravel Sail - Uma interface de linha de comando leve para interagir com o ambiente de desenvolvimento Docker padrão do Laravel. Sail fornece um excelente ponto de partida para construir um aplicativo Laravel usando PHP, MySQL
+- Jetstream/Inertia -  Oferece todo o poder do Vue.js sem a complexidade do roteamento do lado do cliente
+- Docker - O Docker permite que você separe seus aplicativos de sua infraestrutura para que você possa entregar software rapidamente
+- MySQL - Um sistema de gerenciamento de banco de dados (SGBD), que utiliza a linguagem SQL (Linguagem de Consulta Estruturada, do inglês Structured Query Language) como interface
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalação
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+##### Requisito obrigátorio
+Antes de tudo você precisa ter o docker e o docker-compose e também o git.
+Caso não tenha instalado, aqui alguns links de referência:
+- Aqui encontra os passos para instalação do Docker => https://docs.docker.com/get-docker/ 
+- Aqui encontra os passos para instalação do Docker Compose => https://docs.docker.com/compose/ 
+- Aqui encontra os passos para instalação do git => https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
-## Learning Laravel
+##### Clone o projeto
+Com o git instalado e em um diretório da sua escolha, baixe o projeto e acesse seu diretório:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```sh
+git clone https://github.com/YolandoQ/school-network-manager.git
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```sh
+cd school-network-manager
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Aproveite e configure o .env, pro nosso caso basta copiar o .example:
+```sh
+cp .env.example .env
+```
 
-## Laravel Sponsors
+##### Suba o serviço
+Nesse momento, você precisa instalar as dependências do projeto pra conseguir utilizar o laravel sail, execute esses comandos:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```sh
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php83-composer:latest \
+    composer install --ignore-platform-reqs
+```
 
-### Premium Partners
+```sh
+./vendor/bin/sail up -d
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Se houver qualquer conflito de portas você pode comentar, alterar ou apagar a linha correspondente a porta conflituosa no arquivo docker-compose.yml na raiz do projeto:
 
-## Contributing
+```sh
+        ports:
+            - '8888:80' 
+            - '${APP_PORT:-80}:80'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+```
+       
+##### Configurações necessárias
+Com o serviço rodando precisamos configurar e instalar algumas coisas, então execute os seguintes comandos:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```sh
+./vendor/bin/sail artisan key:generate
+```
 
-## Code of Conduct
+```sh
+./vendor/bin/sail artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```sh
+./vendor/bin/sail npm install
+```
 
-## Security Vulnerabilities
+```sh
+./vendor/bin/sail npm run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Feito isso, o sistema deve estar rodando no seu localhost nas portas:
 
-## License
+- localhost:8888
+- localhost
+- localhost:5173
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Preparei uma seeder pra teste, caso julgue necessário, popula o banco de dados com alguns registros:
+
+```sh
+./vendor/bin/sail artisan db:seed --class="TestSeeder"
+```
